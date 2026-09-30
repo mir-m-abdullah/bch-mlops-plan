@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Mir Muhammad Abdullah">
+<title>Notebook to Bedside</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single reading column; the six-stage pipeline is the one wide, visual moment. */
+:root {
+  --bg: #f3f6f8;
+  --surface: #ffffff;
+  --ink: #16242e;
+  --muted: #56687a;
+  --line: #d5dee5;
+  --accent: #1f5f8b;
+  --accent-soft: #e2edf5;
+  --gate: #b5542f;
+  --gate-soft: #f7e6de;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f171d; --surface: #16222b; --ink: #e4ecf1; --muted: #93a6b5; --line: #2a3a46;
+  --accent: #7fb8e0; --accent-soft: #1b3244; --gate: #eb916b; --gate-soft: #3a2519; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f171d; --surface: #16222b; --ink: #e4ecf1; --muted: #93a6b5; --line: #2a3a46;
+  --accent: #7fb8e0; --accent-soft: #1b3244; --gate: #eb916b; --gate-soft: #3a2519; color-scheme: dark }
+
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0;  background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; padding: 0 16px; }
+.wrap { max-width: 980px; margin: 0 auto; padding-block: 48px 64px; display: grid; gap: 56px; }
+.col { max-width: 68ch; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2rem, 5vw, 3.1rem); font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: 1.6rem; font-weight: 700; }
+h3 { font-size: 1.08rem; font-weight: 700; }
+p { margin: 0; }
+.eyebrow { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.lede { font-size: 1.15rem; color: var(--muted); }
+header { display: grid; gap: 16px; }
+.byline { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 0.92rem; color: var(--muted); }
+.byline strong { color: var(--ink); }
+.note { font-size: 0.88rem; color: var(--muted); border-left: 3px solid var(--line); padding-left: 12px; }
+section { display: grid; gap: 20px; }
+
+/* pipeline */
+.pipe { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; counter-reset: stage; }
+.stage { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 10px; align-content: start; min-width: 0; position: relative; }
+.stage .num { font-family: var(--mono); font-size: 0.78rem; color: var(--accent); }
+.stage.gate { border-color: var(--gate); background: var(--gate-soft); }
+.stage.gate .num { color: var(--gate); }
+.stage ul { margin: 0; padding-left: 18px; font-size: 0.92rem; display: grid; gap: 4px; }
+.done { font-size: 0.84rem; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 10px; }
+.done b { color: var(--ink); font-weight: 600; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-family: var(--mono); font-size: 0.72rem; background: var(--accent-soft); color: var(--accent); padding: 2px 8px; border-radius: 4px; }
+.stage.gate .tag { background: var(--surface); color: var(--gate); }
+.loop { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); text-align: center; }
+@media (max-width: 760px) { .pipe { grid-template-columns: minmax(0, 1fr); } }
+
+/* age bands */
+.bands { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 0.92rem; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* 90 days */
+.days { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.day { display: grid; gap: 8px; align-content: start; border-top: 3px solid var(--accent); padding-top: 14px; min-width: 0; }
+.day ul { margin: 0; padding-left: 18px; font-size: 0.94rem; display: grid; gap: 4px; }
+@media (max-width: 760px) { .days { grid-template-columns: minmax(0, 1fr); } }
+
+footer { display: grid; gap: 12px; border-top: 1px solid var(--line); padding-top: 24px; }
+.contact { display: flex; flex-wrap: wrap; gap: 10px 24px; font-family: var(--mono); font-size: 0.88rem; }
+.contact span { user-select: all; }
+a { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">For the ML Ops Engineer II role, BCH Enterprise Data &amp; Analytics</p>
+    <h1>Notebook to bedside: how I'd run MLOps for a pediatric hospital</h1>
+    <p class="lede col">A data scientist trains a model that flags a clinical or operational risk. Getting it from a notebook into a workflow clinicians trust takes six steps, one of them a hard gate. Here is how I'd build that path, and where I've already done each piece.</p>
+    <div class="byline"><span><strong>Mir Muhammad Abdullah</strong></span><span>ML Ops and data engineer</span><span>AWS ML Specialty</span><span>M.S. Analytics, Georgia Tech (in progress)</span></div>
+    <p class="note col">Built from the public job posting only. I don't know BCH's internal stack, so tool names below are examples of the pattern, not assumptions about your systems.</p>
+  </header>
+
+  <section>
+    <h2>The path, stage by stage</h2>
+    <div class="pipe">
+      <div class="stage">
+        <span class="num">STAGE 1</span>
+        <h3>Ingest</h3>
+        <ul><li>Scheduled extracts from the EHR reporting layer, FHIR APIs, and departmental flat files</li><li>Load checks on row counts and freshness, so a missed load pages someone before a dashboard goes stale</li></ul>
+        <div class="tags"><span class="tag">SQL</span><span class="tag">FHIR</span><span class="tag">SFTP</span></div>
+        <p class="done"><b>Done it:</b> integrate six source systems into a SQL Server warehouse for DoD's Defense Acquisition University, with alerting on failed and missed loads.</p>
+      </div>
+      <div class="stage">
+        <span class="num">STAGE 2</span>
+        <h3>Transform</h3>
+        <ul><li>dbt models with tests on keys, nulls, and accepted values</li><li>Lineage from raw table to model feature, so any number can be traced back to its source</li></ul>
+        <div class="tags"><span class="tag">dbt</span><span class="tag">ETL/ELT</span><span class="tag">lineage</span></div>
+        <p class="done"><b>Done it:</b> 50+ Informatica mappings serving 100,000+ users; root-cause analysis through source-to-target lineage.</p>
+      </div>
+      <div class="stage">
+        <span class="num">STAGE 3</span>
+        <h3>Train and track</h3>
+        <ul><li>Every run logged in MLflow: data version, parameters, metrics, artifacts</li><li>Models registered with owners and a model card that data scientists and clinicians can both read</li></ul>
+        <div class="tags"><span class="tag">Python</span><span class="tag">MLflow</span><span class="tag">scikit-learn</span></div>
+        <p class="done"><b>Done it:</b> scikit-learn and PyTorch models on AWS SageMaker, 30% accuracy gain on client work.</p>
+      </div>
+      <div class="stage gate">
+        <span class="num">STAGE 4 · GATE</span>
+        <h3>Validate before anything ships</h3>
+        <ul><li>Performance and calibration reported per age band, never only overall</li><li>Subgroup checks for fairness across patient populations</li><li>Clinical owner signs off in the registry before promotion</li></ul>
+        <div class="tags"><span class="tag">calibration</span><span class="tag">subgroups</span><span class="tag">sign-off</span></div>
+        <p class="done"><b>Done it:</b> built evaluation pipelines that keep LLM answers grounded in source documents.</p>
+      </div>
+      <div class="stage">
+        <span class="num">STAGE 5</span>
+        <h3>Deploy</h3>
+        <ul><li>Batch scores written back to the warehouse for dashboards, or a containerized API for real-time use</li><li>CI/CD with code review, so a change is tested and reversible</li></ul>
+        <div class="tags"><span class="tag">Docker</span><span class="tag">CI/CD</span><span class="tag">Git</span></div>
+        <p class="done"><b>Done it:</b> CI/CD for a DoD data warehouse, 35% faster delivery and 50% fewer deployment errors.</p>
+      </div>
+      <div class="stage">
+        <span class="num">STAGE 6</span>
+        <h3>Monitor</h3>
+        <ul><li>Input drift, output drift, and outcome-based performance once labels arrive</li><li>An alert sends a model back to stage 3 for retraining, not silently degrading</li></ul>
+        <div class="tags"><span class="tag">drift</span><span class="tag">alerting</span><span class="tag">retraining</span></div>
+        <p class="done"><b>Done it:</b> replaced ticket-driven failure discovery with proactive monitoring on production pipelines.</p>
+      </div>
+    </div>
+    <p class="loop">Stage 6 feeds back into stage 3. The loop is the product.</p>
+  </section>
+
+  <section>
+    <h2 class="col">Why pediatrics changes the checklist</h2>
+    <p class="col">A model that looks accurate overall can be wrong for the youngest patients, because normal ranges move with age and some groups are small. So the validation gate reports results in age bands like these, with the sample size next to every number.</p>
+    <div class="bands">
+      <table>
+        <thead><tr><th>Age band</th><th>Typical resting heart rate</th><th>What the gate checks</th></tr></thead>
+        <tbody>
+          <tr><td>Neonate (0 to 28 days)</td><td class="n">100 - 205 bpm</td><td>Small cohort, so wide confidence intervals are shown, not hidden</td></tr>
+          <tr><td>Infant (1 to 12 months)</td><td class="n">100 - 180 bpm</td><td>Features that depend on weight are scaled, not raw</td></tr>
+          <tr><td>Child (1 to 10 years)</td><td class="n">60 - 140 bpm</td><td>Calibration per band, so a 20% risk means 20%</td></tr>
+          <tr><td>Adolescent (11 to 17 years)</td><td class="n">60 - 100 bpm</td><td>Adult-like ranges, compared against adult-trained baselines</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note col">Heart rate ranges are approximate published pediatric reference values, shown to illustrate why a single threshold fails across ages.</p>
+  </section>
+
+  <section>
+    <h2>My first 90 days</h2>
+    <div class="days">
+      <div class="day"><p class="eyebrow">Days 1 - 30</p><h3>Learn the ground</h3><ul><li>Map current models, data sources, and who owns each</li><li>Sit with data scientists on how work moves to production today</li><li>Complete HIPAA and PHI access training</li></ul></div>
+      <div class="day"><p class="eyebrow">Days 31 - 60</p><h3>Pave one path</h3><ul><li>Take one model through all six stages end to end</li><li>Add dbt tests and MLflow tracking where they're missing</li><li>Write the runbook as I go</li></ul></div>
+      <div class="day"><p class="eyebrow">Days 61 - 90</p><h3>Make it the default</h3><ul><li>Turn that path into a template other projects reuse</li><li>Stand up drift monitoring with clear alert owners</li><li>Lead code reviews and pair with junior engineers</li></ul></div>
+    </div>
+  </section>
+
+  <footer>
+    <p class="col">I already work under HIPAA through my own consultancy, where I build patient-communication automation for a clinic on an EHR integration. I'd like to bring that and my pipeline experience to BCH.</p>
+    <div class="contact"><span>mirabdullah213@gmail.com</span><span>(571) 250-9100</span><a href="https://github.com/mir-m-abdullah" target="_blank" rel="noopener">github.com/mir-m-abdullah</a></div>
+  </footer>
+</div>
+</body>
+</html>
